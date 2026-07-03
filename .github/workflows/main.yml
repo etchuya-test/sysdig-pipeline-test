@@ -23,12 +23,12 @@ jobs:
           chmod +x sysdig-cli-scanner
 
       - name: Run Sysdig Scan
-        env:
-          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
         run: |
           ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
 
       - name: Show scan logs
         if: always()
