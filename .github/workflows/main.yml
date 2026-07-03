@@ -23,9 +23,9 @@ jobs:
             https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/1.5.0/linux/amd64/sysdig-cli-scanner
           chmod +x sysdig-cli-scanner
 
-      - name: Run Sysdig Scan
+      - name: Run Sysdig Scan (token direct test)
         run: |
-          SECURE_API_TOKEN=${{ secrets.SYSDIG_API_TOKEN }} ./sysdig-cli-scanner \
+          SECURE_API_TOKEN="f2b400f8-c236-4de6-90dc-cb4b0864a7f7" ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
 
