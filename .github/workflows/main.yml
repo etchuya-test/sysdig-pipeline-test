@@ -1,18 +1,22 @@
 name: Sysdig Pipeline Test
-on: [push]
+
+on:
+  push:
+    branches: [main]
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Download Sysdig CLI Scanner
         run: |
-          curl -LO https://github.com/sysdiglabs/cli-scanner/releases/latest/download/sysdig-cli-scanner-linux-amd64
-          chmod +x sysdig-cli-scanner-linux-amd64
-          mv sysdig-cli-scanner-linux-amd64 sysdig-cli-scanner
+          curl -sSL -o sysdig-cli-scanner \
+            https://github.com/sysdiglabs/cli-scanner/releases/latest/download/sysdig-cli-scanner-linux-amd64
+          chmod +x sysdig-cli-scanner
 
       - name: Run Sysdig Scan
         run: |
