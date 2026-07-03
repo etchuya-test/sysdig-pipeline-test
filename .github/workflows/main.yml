@@ -14,7 +14,7 @@ jobs:
 
       - name: Test connectivity to Sysdig Secure
         run: |
-          echo "Testing connectivity to Sysdig Secure..."
+          echo "===== Testing connectivity to Sysdig Secure ====="
           curl -v https://secure.sysdig.com 2>&1 | tee curl-test.log
 
       - name: Download Sysdig CLI Scanner (Sysdig CDN)
@@ -28,3 +28,9 @@ jobs:
           SECURE_API_TOKEN=${{ secrets.SYSDIG_API_TOKEN }} ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
+
+      - name: Show scan logs
+        if: always()
+        run: |
+          echo "===== scan-logs ====="
+          cat /home/runner/work/sysdig-pipeline-test/sysdig-pipeline-test/scan-logs || echo "scan-logs not found"
