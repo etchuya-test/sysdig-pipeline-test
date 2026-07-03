@@ -12,10 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download Sysdig CLI Scanner (fixed version)
+      - name: Download Sysdig CLI Scanner (Sysdig CDN)
         run: |
           curl -sSL -o sysdig-cli-scanner \
-            https://github.com/sysdiglabs/cli-scanner/releases/download/v1.5.0/sysdig-cli-scanner-linux-amd64
+            https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/1.5.0/linux/amd64/sysdig-cli-scanner
           chmod +x sysdig-cli-scanner
 
       - name: Run Sysdig Scan
