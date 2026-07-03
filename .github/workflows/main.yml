@@ -17,15 +17,16 @@ jobs:
           echo "===== Testing connectivity to Sysdig Secure ====="
           curl -v https://secure.sysdig.com 2>&1 | tee curl-test.log
 
-      - name: Download Sysdig CLI Scanner (Sysdig CDN)
+      - name: Download Sysdig CLI Scanner (Latest)
         run: |
-          curl -sSL -o sysdig-cli-scanner \
-            https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/1.5.0/linux/amd64/sysdig-cli-scanner
+          curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
           chmod +x sysdig-cli-scanner
 
-      - name: Run Sysdig Scan (token direct test)
+      - name: Run Sysdig Scan
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
         run: |
-          SECURE_API_TOKEN="f2b400f8-c236-4de6-90dc-cb4b0864a7f7" ./sysdig-cli-scanner \
+          ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
 
