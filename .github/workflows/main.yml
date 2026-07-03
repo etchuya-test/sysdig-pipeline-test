@@ -12,30 +12,50 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check SECURE_API_TOKEN
-        env:
-          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
+      # ============================
+      # 1. 環境変数衝突チェック（Dump）
+      # ============================
+      - name: Dump environment variables
         run: |
-          if [ -z "$SECURE_API_TOKEN" ]; then
-            echo "ERROR: SECURE_API_TOKEN is empty or not set"
+          echo "===== ENV ====="
+          env
+
+      # ============================
+      # 2. Secret 展開チェック（衝突判定）
+      # ============================
+      - name: Check SYSDIG_TOKEN
+        env:
+          SYSDIG_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
+        run: |
+          if [ -z "$SYSDIG_TOKEN" ]; then
+            echo "ERROR: SYSDIG_TOKEN is empty or not set"
             exit 1
           else
-            echo "SECURE_API_TOKEN is set (length: ${#SECURE_API_TOKEN})"
+            echo "SYSDIG_TOKEN is set (length: ${#SYSDIG_TOKEN})"
           fi
 
+      # ============================
+      # 3. 最新版 CLI Scanner ダウンロード
+      # ============================
       - name: Download Sysdig CLI Scanner (Latest)
         run: |
           curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
           chmod +x sysdig-cli-scanner
 
+      # ============================
+      # 4. Sysdig Scan 実行（Secret 名衝突回避済）
+      # ============================
       - name: Run Sysdig Scan
         env:
-          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
+          SYSDIG_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
         run: |
-          ./sysdig-cli-scanner \
+          SECURE_API_TOKEN=$SYSDIG_TOKEN ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
 
+      # ============================
+      # 5. scan-logs 表示
+      # ============================
       - name: Show scan logs
         if: always()
         run: |
