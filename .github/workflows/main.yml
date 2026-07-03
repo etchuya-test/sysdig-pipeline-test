@@ -12,10 +12,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Test connectivity to Sysdig Secure
+      - name: Check SECURE_API_TOKEN
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
         run: |
-          echo "===== Testing connectivity to Sysdig Secure ====="
-          curl -v https://secure.sysdig.com 2>&1 | tee curl-test.log
+          if [ -z "$SECURE_API_TOKEN" ]; then
+            echo "ERROR: SECURE_API_TOKEN is empty or not set"
+            exit 1
+          else
+            echo "SECURE_API_TOKEN is set (length: ${#SECURE_API_TOKEN})"
+          fi
 
       - name: Download Sysdig CLI Scanner (Latest)
         run: |
@@ -23,12 +29,12 @@ jobs:
           chmod +x sysdig-cli-scanner
 
       - name: Run Sysdig Scan
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
         run: |
           ./sysdig-cli-scanner \
             --apiurl https://secure.sysdig.com \
             quay.io/scsk_ecchuuya/sysdigtest:v4
-        env:
-          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
 
       - name: Show scan logs
         if: always()
